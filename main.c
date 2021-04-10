@@ -4,6 +4,8 @@
 
 #define MODVAL 1000000007
 
+int n, h, H;
+
 int mod_abs(int a, int mod)
 {
     return ((a % mod) + mod) % mod;
@@ -19,15 +21,13 @@ int mod_sub(int a, int b, int mod)
     return mod_add(a, -b, mod);
 }
 
-int arc(int n, int h, int H)
+int arc()
 {
-    int room[n];
-
     int sol = 0;
 
-    for (int i = 1; h - i >= 1; i++)
+    for (int i = 1; i < n; i++)
     {
-        if (h + i <= H)
+        if (h + i <= H && h - i >= 1)
         {
             sol++;
         }
@@ -36,8 +36,11 @@ int arc(int n, int h, int H)
     return sol;
 }
 
-int room_arcs(int n, int h, int H, int num_sols[n])
+int room_arcs()
 {
+    int num_sols[n];
+    memset(num_sols, -1, sizeof(int) * n);
+
     num_sols[2] = mod_abs(arc(n, h, H), MODVAL);
 
     for (int i = 3; i < n; i++)
@@ -55,10 +58,9 @@ int main()
 
     while (t > 0)
     {
-        int n, h, H;
 
         scanf("%d %d %d", &n, &h, &H);
-        printf("%d\n", build_arc(n, h, H));
+        printf("%d\n", room_arcs(n, h, H));
 
         t--;
     }
