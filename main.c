@@ -21,34 +21,20 @@ int mod_sub(int a, int b, int mod)
     return mod_add(a, -b, mod);
 }
 
-int arc()
+int arc(int dp[], int i)
 {
-    int sol = 0;
-
-    for (int i = 1; i < n; i++)
+    if (dp[i] != 0)
     {
-        if (h + i <= H && h - i >= 1)
+        int narcs = 0;
+        for (int j = 0; j < i; j++)
         {
-            sol++;
+            narcs += dp[j];
         }
+        return narcs;
     }
-
-    return sol;
-}
-
-int room_arcs()
-{
-    int num_sols[n];
-    memset(num_sols, -1, sizeof(int) * n);
-
-    num_sols[2] = mod_abs(arc(n, h, H), MODVAL);
-
-    for (int i = 3; i < n; i++)
+    else
     {
-        num_sols[i] = mod_add(arc(i + 1, h, H), num_sols[i - 1], MODVAL);
     }
-
-    return num_sols[n - 1];
 }
 
 int main()
@@ -58,9 +44,12 @@ int main()
 
     while (t > 0)
     {
-
         scanf("%d %d %d", &n, &h, &H);
-        printf("%d\n", room_arcs(n, h, H));
+
+        int dp[n];
+        memset(dp, 0, sizeof(dp));
+
+        printf("%d\n", arc(dp));
 
         t--;
     }
