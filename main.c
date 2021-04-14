@@ -126,7 +126,7 @@ int arcs(int x, int y, int d, int sols[n][H][2])
         }
     }
 
-    return sols[x][y][0];
+    return sols[x][y][0] + sols[x][y][1];
 }
 
 int main()
