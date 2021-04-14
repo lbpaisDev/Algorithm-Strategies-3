@@ -30,7 +30,13 @@ int accept(int x,int y)
         return 0;
     }
 
-    if(y >= (n - x) * h - 1) // rejection test 3: se já não houver espaço suficiente para os blocos chegarem a y = 0 até ao fim da sala (regra 2)
+    if(x == n - 1 && y > 0) // rejection test 3: se o bloco estiver no fim da sala e a sua altura for superior a 0 (regra 2)
+    {
+        return 0;
+    }
+
+    int missing_space = n - 1 - x;
+    if(y >= h + (missing_space - 1) * (h - 1)) // rejection test 3: se já não houver espaço suficiente para os blocos chegarem a y = 0 até ao fim da sala (regra 2)
     {
         return 0;
     }
@@ -67,13 +73,34 @@ void getlimits(int limits[2], int y, int d) {
     limits[1] = end;
 }
 
-int arcs(int x, int y, int d)
+int iscached(int sols[2], int d)
+{
+    if(d == -1 && sols[1] != 0)
+    {
+        return sols[1];
+    }
+    
+    if(d == 1 && (sols[0] != 0 || sols[1] != 0))
+    {
+        return sols[0] + sols[1];
+    }
+
+    return 0;
+}
+
+int arcs(int x, int y, int d, int sols[n][H][2])
 {
     if(accept(x, y) == 0) // testes de rejeição
     {
         return 0;
     }
-    
+
+    int cached_val = iscached(sols[x][y], d);
+    if(cached_val != 0) // verificar se bloco está cached
+    {
+        return cached_val;
+    }
+
     if(x > 1 && y == 0) // teste de aceitação
     {
         return 1;
@@ -81,8 +108,7 @@ int arcs(int x, int y, int d)
 
     int limits[2];
     getlimits(limits, y, d); // calcular limites de posições do próximo bloco de modo a que os blocos atual e seguinte partilhem pelo menos 1 de altura (regra 3)
-    
-    int sols = 0;
+
     for(int i = limits[0]; i <= limits[1]; i++)
     {
         if(i == y) // se a altura do próximo bloco for igual à do atual, rejeitar (regra 4)
@@ -92,15 +118,15 @@ int arcs(int x, int y, int d)
 
         if(i < y) // se a altura do próximo bloco for inferior à do atual, então chamar a função recursiva atualizando x para x + 1, y para i e direção para -1
         {
-            sols += arcs(x+1, i, -1);
+            sols[x][y][1] += arcs(x+1, i, -1, sols);
         }
         else // se a altura do próximo bloco for superior à do atual, então chamar a função recursiva atualizando x para x + 1, y para i e direção para 1
         { 
-            sols += arcs(x+1, i, 1);
+            sols[x][y][0] += arcs(x+1, i, 1, sols);
         }
     }
 
-    return sols;
+    return sols[x][y][0];
 }
 
 int main()
@@ -111,8 +137,10 @@ int main()
     while (t > 0)
     {
         scanf("%d %d %d", &n, &h, &H);
-        printf("%d\n", mod_abs(arcs(0, 0, 1), 1000000007));
-
+        int sols[n][H][2];
+        memset(sols, 0, n * H * 2 * sizeof(int));
+        printf("%d\n", mod_abs(arcs(0, 0, 1, sols), 1000000007));
+        
         t--;
     }
 
