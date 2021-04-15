@@ -7,6 +7,7 @@
 int H;
 int h;
 int n;
+int*** sols;
 
 int mod_abs(int a, int mod)
 {
@@ -23,14 +24,14 @@ int mod_sub(int a, int b, int mod)
     return mod_add(a, -b, mod);
 }
 
-int accept(int x,int y)
+int accept(int x, int y)
 {
-    if(x == 1 && y == 0) // rejection test 2: se y = 0 na segunda posição horizontal da sala então k < 3 (regra 1)
+    if(x == 1 && y == 0) // rejection test 1: se y = 0 na segunda posição horizontal da sala então k < 3 (regra 1)
     {
         return 0;
     }
 
-    if(x == n - 1 && y > 0) // rejection test 3: se o bloco estiver no fim da sala e a sua altura for superior a 0 (regra 2)
+    if(x == n - 1 && y > 0) // rejection test 2: se o bloco estiver no fim da sala e a sua altura for superior a 0 (regra 2)
     {
         return 0;
     }
@@ -42,35 +43,6 @@ int accept(int x,int y)
     }
 
     return 1;
-}
-
-void getlimits(int limits[2], int y, int d) {
-    int init, end;
-
-    if(y > h - 1) // se o bloco estiver numa altura superior a h - 1 
-    {
-        init = y - h + 1;
-    }
-    else
-    {
-        init = 0;
-    }
-    limits[0] = init;
-
-    if(d == -1 || H - y == h) // se os blocos estão a descer ou chegou à máxima altura possível na sala (para a altura do bloco)
-    {
-        end = y - 1;
-    }
-    else if(H - y < 2 * h)
-    {
-        end = H - h;
-    }
-    else
-    {
-        end = y + h - 1;
-    }
-
-    limits[1] = end;
 }
 
 int iscached(int sols[2], int d)
@@ -88,7 +60,39 @@ int iscached(int sols[2], int d)
     return 0;
 }
 
-int arcs(int x, int y, int d, int sols[n][H][2])
+void getlimits(int limits[2], int y, int d) {
+    int init, end;
+
+    if(y > h - 1) // se o bloco estiver numa altura superior a h - 1 
+    {
+        init = y - h + 1;
+    }
+    else if (y > 0)
+    {
+        init = 0;
+    }
+    else
+    {
+        init = 1;
+    }
+    limits[0] = init;
+
+    if(d == -1 || H == y + h) // se os blocos estão a descer ou o bloco chegou à máxima altura possível na sala (para a altura do bloco)
+    {
+        end = y - 1;
+    }
+    else if(H - y < 2 * h)
+    {
+        end = H - h;
+    }
+    else
+    {
+        end = y + h - 1;
+    }
+    limits[1] = end;
+}
+
+int arcs(int x, int y, int d)
 {
     if(accept(x, y) == 0) // testes de rejeição
     {
@@ -118,16 +122,17 @@ int arcs(int x, int y, int d, int sols[n][H][2])
 
         if(i < y) // se a altura do próximo bloco for inferior à do atual, então chamar a função recursiva atualizando x para x + 1, y para i e direção para -1
         {
-            sols[x][y][1] += arcs(x+1, i, -1, sols);
+            sols[x][y][1] += arcs(x+1, i, -1);
         }
         else // se a altura do próximo bloco for superior à do atual, então chamar a função recursiva atualizando x para x + 1, y para i e direção para 1
         { 
-            sols[x][y][0] += arcs(x+1, i, 1, sols);
+            sols[x][y][0] += arcs(x+1, i, 1);
         }
     }
 
     return sols[x][y][0] + sols[x][y][1];
 }
+
 
 int main()
 {
@@ -137,10 +142,44 @@ int main()
     while (t > 0)
     {
         scanf("%d %d %d", &n, &h, &H);
-        int sols[n][H][2];
+        printf("Input Recebido!\n");
+        // --> Alocar dinamicamente?
+        // int sols[n][H][2];
+        sols = (int ***) malloc(sizeof(int) * n);
+        for(int i = 0; i < n; i++)
+        {
+            sols[i] = (int **) malloc(sizeof(int) * H);
+            for(int j = 0; j < H; j++)
+            {
+                sols[i][j] = (int *) malloc(sizeof(int) * 2);
+            }
+        }
+        printf("Array Alocado!\n");
         memset(sols, 0, n * H * 2 * sizeof(int));
-        printf("%d\n", mod_abs(arcs(0, 0, 1, sols), 1000000007));
+        printf("Array Pronto!\n");
         
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < H; j++)
+            {
+                printf("[%d, ", sols[i][j][0]);
+                printf("%d] ", sols[i][j][1]);
+            }
+            printf("\n");
+        }
+        printf("%d\n", mod_abs(arcs(0, 0, 1), MODVAL));
+        printf("Teste Bem Sucedido!\n");
+
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < H; j++)
+            {
+                free(sols[i][j]);
+            }
+            free(sols[i]);
+        }
+        free(sols);
+
         t--;
     }
 
