@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define MODVAL 1000000007
 
@@ -155,7 +156,11 @@ int main()
     {
         scanf("%d %d %d", &n, &h, &H);
         memset(sols, 0, 500 * 60000 * 2 * sizeof(int));
+        clock_t begin = clock();
         printf("%d\n", mod_abs(arcs(), MODVAL));
+        clock_t end = clock();
+        double time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
+        printf("Time Spent: %f seconds\n", time_spent);
         t--;
     }
 
