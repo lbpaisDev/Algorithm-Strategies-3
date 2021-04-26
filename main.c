@@ -54,7 +54,7 @@ int arcs()
     // -----
 
     int next_end = 0; // ultimo bloco possivel na coluna seguinte da sala
-    for (int i = n - 2; i > 0; i--)
+    for (int i = last_n - 2; i > 0; i--)
     {
         int end = next_end + h - 1;
         if (end > (h - 1) * i)
@@ -74,9 +74,10 @@ int arcs()
                 sols_end = next_end;
             }
 
+            sols[i][1][0] = 0;
             for (int j = 2; j <= sols_end; j++)
             {
-                sols[i][j][0] = mod_add(sols[i][j][0], getsols(sols[i + 1][j]), MODVAL);
+                sols[i][1][0] = mod_add(sols[i][1][0], getsols(sols[i + 1][j]), MODVAL);
             }
         }
 
@@ -122,12 +123,25 @@ int arcs()
         next_end = end;
     }
 
+    sols[0][0][0] = 0;
     for (int i = 1; i <= next_end; i++) // A soma de todas as soluções vai estar no index inicial
     {
         sols[0][0][0] = mod_add(sols[0][0][0], getsols(sols[1][i]), MODVAL);
     }
 
     return sols[0][0][0];
+}
+
+void print_sols()
+{
+    for(int i = H - 1; i >= 0; i--)
+    {
+        for(int j = 0; j < n; j++)
+        {
+            printf("[%d, %d] ", sols[j][i][0], sols[j][i][1]);
+        }
+        printf("\n");
+    }
 }
 
 int main()
