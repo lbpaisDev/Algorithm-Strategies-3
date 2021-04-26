@@ -155,11 +155,11 @@ int main()
     while (t > 0)
     {
         scanf("%d %d %d", &n, &h, &H);
-        memset(sols, 0, 500 * 60000 * 2 * sizeof(int));
         clock_t begin = clock();
+        memset(sols, 0, 500 * 60000 * 2 * sizeof(int));
         printf("%d\n", mod_abs(arcs(), MODVAL));
         clock_t end = clock();
-        double time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
+        double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
         printf("Time Spent: %f seconds\n", time_spent);
         t--;
     }
