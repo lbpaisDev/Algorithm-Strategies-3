@@ -123,7 +123,7 @@ int arcs()
         next_end = end;
     }
 
-    for (int i = 1; i < next_end; i++) // A soma de todas as soluções vai estar no index inicial
+    for (int i = 1; i <= next_end; i++) // A soma de todas as soluções vai estar no index inicial
     {
         sols[0][0][0] = mod_add(sols[0][0][0], getsols(sols[1][i]), MODVAL);
     }
